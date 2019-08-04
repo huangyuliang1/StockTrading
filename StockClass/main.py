@@ -10,18 +10,30 @@ import tushare as ts
 from CstockOperating import *
 
 # df = ts.get_hist_data("002142") #宁波银行
-df = ts.get_hist_data("600598") #北大荒
+# df = ts.get_hist_data("600598") #北大荒
 # df = ts.get_hist_data("002415")  #海康威视
-# df = ts.get_hist_data("000651")  #格力电器
+df = ts.get_hist_data("000651")  #格力电器
 # print(df.head(5))
 cs = df.close
 cs = np.array(cs)
 cs = list(cs)
 cs.reverse()
 
-a = StockOperating( cs, 100000, 0.2, 0.2, -0.02, 0.02)  # stockHistData, money, buyRate, sellRate, fallThr, riseThr
+a = StockOperating( cs, 100000, 0.25, 0.25, -0.02, 0.02)  # stockHistData, money, buyRate, sellRate, fallThr, riseThr
 a.process()
+print("proNum:",a.proNum)
 a.showProfit()
-df.close.plot()
-plt.show()
 print("end!")
+# df.close.plot()
+print(len(cs))
+plt.plot(list(range(len(cs))),cs)
+plt.show()
+
+
+
+
+
+
+
+
+
