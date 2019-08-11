@@ -5,8 +5,6 @@ Created on 2019年8月11日
 '''
 from stock import Stock
 
-import numpy as np
-
 class Investor():
     def __init__(self, money):
         self.totalManey = money
@@ -57,9 +55,7 @@ class Investor():
         self.marketMoney = self.stok1.stockNum * self.stok1.curPrice    
         self.totalManey = self.freeMoney + self.marketMoney
         self.profit = self.totalManey - self.cost
-        
-    
-               
+                      
     def showIvestorInfor(self):
         print("markeyMoney:{:.2f}, freeMoney:{:.2f}, profit:{:.2f}".format(
                 self.marketMoney, self.freeMoney,self.profit))

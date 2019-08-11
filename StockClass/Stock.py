@@ -52,8 +52,3 @@ class Stock():
              
 
        
-    
-    
-    
-    
-    

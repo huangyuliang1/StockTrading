@@ -6,7 +6,6 @@ Created on 2019年8月11日
 # from stock import Stock
 from investor import Investor
 
-
 class BuyOrSell():
     def __init__(self, totalManey):
         self.totalManey = totalManey
@@ -16,10 +15,13 @@ class BuyOrSell():
         self.continuousSelTimes = 0
         self.lstProPri = 0
         
+    def chooseStock(self, strStockName):
+        self.stockName = strStockName
+        
     def pro(self, riseThr = 0.01, fallThr = -0.05, buyRate = 0.25, selRate = 0.25):
               
         investor = Investor(self.totalManey)
-        investor.jianCang("002414", 0)
+        investor.jianCang(self.stockName, 0)
         stock = investor.stok1
         self.updateLstBuyPriList(0, stock.curPrice, stock.stockHands)
         self.lstProPri = stock.curPrice
@@ -64,7 +66,8 @@ class BuyOrSell():
     
 if  __name__ == '__main__':
     
-    process = BuyOrSell(100000)   
+    process = BuyOrSell(100000)  
+    process.chooseStock("002414") 
     process.pro()
     
     
