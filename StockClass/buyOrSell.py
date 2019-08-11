@@ -3,7 +3,6 @@ Created on 2019年8月11日
 
 @author: HuangYuliang
 '''
-# from stock import Stock
 from investor import Investor
 
 class BuyOrSell():
