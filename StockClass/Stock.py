@@ -3,6 +3,8 @@ Created on 2019年8月11日
 
 @author: HuangYuliang
 '''
+import tushare as ts
+import numpy as np
 
 class Stock():
     def __init__(self, name):    
@@ -12,6 +14,12 @@ class Stock():
         self.marketMoney = 0
         self.stockNum = 0
         self.stockHands = 0
+        self.longOfStockHistData = 0
+        
+    def getStockHistData(self):
+        df = ts.get_hist_data(self.name)  
+        self.stockHistData = list(np.array(df.close))
+        self.stockHistData.reverse()
         
     def calcStockNumAfterBuyAndReturnBoughtMoney(self, money):
         num = int(money // self.curPrice)

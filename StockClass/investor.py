@@ -4,7 +4,7 @@ Created on 2019年8月11日
 @author: HuangYuliang
 '''
 from stock import Stock
-import tushare as ts
+
 import numpy as np
 
 class Investor():
@@ -24,8 +24,9 @@ class Investor():
         self.stok1 = Stock(strStockName)
         self.stockList.append(self.stok1)
      
-        self.stok1.stockHistData = self.getStockHistData(strStockName)
+        self.stok1.getStockHistData()
         self.stok1.updateCurPrice(date)
+        self.stok1.longOfStockHistData = len(self.stok1.stockHistData)
         
         self.buy(date, self.totalManey / 2.0)
              
@@ -57,11 +58,7 @@ class Investor():
         self.totalManey = self.freeMoney + self.marketMoney
         self.profit = self.totalManey - self.cost
         
-    def getStockHistData(self, strStockName):
-        df = ts.get_hist_data(strStockName)  
-        stockHistData = list(np.array(df.close))
-        stockHistData.reverse()
-        return stockHistData
+    
                
     def showIvestorInfor(self):
         print("markeyMoney:{:.2f}, freeMoney:{:.2f}, profit:{:.2f}".format(
