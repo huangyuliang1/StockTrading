@@ -16,7 +16,7 @@ class Stock():
         self.stockNum = 0
         self.stockHands = 0
         
-    def calcStockNumAfterBuy(self, money):
+    def calcStockNumAfterBuyAndReturnBoughtMoney(self, money):
         num = int(money // self.curPrice)
         if num < 100:
             print("Money are not enough!")
@@ -26,8 +26,13 @@ class Stock():
             self.stockNum += hands * 100
             return hands * 100 * self.curPrice
     
-    def calcStockNumAfterSell(self, num):
-        self.stockNum -= num
+    def calcStockNumAfterSellAndReturnSelledHands(self, hands):
+        if hands * 100 > self.stockNum:
+            print("stockNum are not enougth, Sell failure!")
+            return 0
+        else:
+            self.stockNum -= hands * 100
+            return hands
         
     def updateCurPrice(self,date):
         self.curPrice = self.stockHistData[date]
@@ -53,6 +58,7 @@ class Investor():
         self.stockList = []
           
     def jianCang(self,strStockName, date):
+        print("JianCanging...")
         self.stok1 = Stock(strStockName)
         self.stockList.append(self.stok1)
      
@@ -61,17 +67,20 @@ class Investor():
         
         self.buy(date, self.totalManey / 2.0)
              
-    def buy(self, date, money):
+    def buy(self, date, boughtMoney):
+        print("buying...")
         self.stok1.updateCurPrice(date)
-        self.money2Buy = self.stok1.calcStockNumAfterBuy(money)
+        self.money2Buy = self.stok1.calcStockNumAfterBuyAndReturnBoughtMoney(boughtMoney)
         
         self.stok1.updateStockInfo()
         self.updateInvestorInfo(1)
   
-    def sell(self, date, num):
-        self.stok1.calcStockNumAfterSell(num)
-        self.stok1.curPrice = self.stockHistData[date]
-        self.moneyfromSell = num * self.stok1.curPrice
+    def sell(self, date, hands):
+        print("sell...")
+        self.stok1.updateCurPrice(date)
+        
+        hands = self.stok1.calcStockNumAfterSellAndReturnSelledHands(hands)
+        self.moneyfromSell = hands * 100 * self.stok1.curPrice
         
         self.stok1.updateStockInfo()
         self.updateInvestorInfo(0)
@@ -80,7 +89,7 @@ class Investor():
         if ifBuy:
             self.freeMoney = self.freeMoney - self.money2Buy
         else:
-            self.freeMoney = self.freeMoney + self.curPrice * self.moneyfromSell
+            self.freeMoney = self.freeMoney + self.moneyfromSell
         
         self.marketMoney = self.stok1.stockNum * self.stok1.curPrice    
         self.totalManey = self.freeMoney + self.marketMoney
@@ -102,7 +111,12 @@ if  __name__ == '__main__':
     investor.jianCang("002415", 0)
     investor.showIvestorInfor()
     investor.stok1.showStockInfor()
+
     investor.buy(20, investor.freeMoney / 3.0)
+    investor.showIvestorInfor()
+    investor.stockList[0].showStockInfor()
+
+    investor.sell(30, 10)
     investor.showIvestorInfor()
     investor.stockList[0].showStockInfor()
        
