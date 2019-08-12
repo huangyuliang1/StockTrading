@@ -37,7 +37,7 @@ class Investor():
         self.updateInvestorInfo(1)
   
     def sell(self, date, hands):
-        print("sell...")
+        print("selling...")
         self.stok1.updateCurPrice(date)
         
         hands = self.stok1.calcStockNumAfterSellAndReturnSelledHands(hands)
