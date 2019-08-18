@@ -9,24 +9,27 @@ class Investor():
     def __init__(self, money):
         self.totalManey = money
         self.cost = money
-        self.profit = 0
+        self.profit = 0.0
+        self.profitMargin = 0.0
         self.marketMoney = 0
         self.freeMoney = money
         self.money2Buy = 0
         self.moneyfromSell = 0
         
         self.stockList = []
-          
-    def jianCang(self,strStockName, date):
-        print("JianCanging...")
+        self.recordBuyInfor = []   #[price, hands, state]
+        self.recordSelInfor = []
+    
+    def chooseStock(self, strStockName):
+        self.stockName = strStockName
         self.stok1 = Stock(strStockName)
         self.stockList.append(self.stok1)
-     
         self.stok1.getStockHistData()
-        self.stok1.updateCurPrice(date)
-        self.stok1.longOfStockHistData = len(self.stok1.stockHistData)
-        
-        self.buy(date, self.totalManey / 2.0)
+             
+    def jianCang(self, date, rate = 1.0):
+        print("JianCanging...")
+        self.stok1.updateCurPrice(date)   
+        self.buy(date, self.totalManey * rate)
              
     def buy(self, date, boughtMoney):
         print("buying...")
@@ -46,20 +49,68 @@ class Investor():
         self.stok1.updateStockInfo()
         self.updateInvestorInfo(0)
     
-    def updateInvestorInfo(self, ifBuy=1):
-        if ifBuy:
+    def qingCang(self,date):
+        print("qingCang...")
+        self.sell(date, self.stok1.stockHands)
+    
+    def chuquanAndQingCang(self, date):
+        print("chuquan...")
+        self.qingCang(date-1)   
+#         self.buy(date, self.moneyfromSell)
+        
+    def initStock(self,date):
+        self.stok1.stockHistData = []
+        self.stok1.curPrice = 0
+        self.stok1.marketMoney = 0
+        self.stok1.stockNum = 0
+        self.stok1.stockHands = 0
+        self.stok1.longOfStockHistData = 0
+        self.stok1.maxAverMinMonth = [0.0,0.0,0.0]
+        self.stok1.maxAverMinWeek = [0.0,0.0,0.0]
+   
+    def updateInvestorInfo(self, ifBuy):
+        if ifBuy:    
+            hands = int(self.money2Buy / self.stok1.curPrice // 100)
+            recode = OperatRecord(self.stok1.curPrice, hands)
+            self.recordBuyInfor.append(recode)
+            
             self.freeMoney = self.freeMoney - self.money2Buy
         else:
+            hands = int(self.moneyfromSell / self.stok1.curPrice // 100)
+            recode = OperatRecord(self.stok1.curPrice, hands)
+            self.recordSelInfor.append(recode)
+            
             self.freeMoney = self.freeMoney + self.moneyfromSell
-        
+           
         self.marketMoney = self.stok1.stockNum * self.stok1.curPrice    
         self.totalManey = self.freeMoney + self.marketMoney
         self.profit = self.totalManey - self.cost
-                      
+        self.profitMargin = self.profit / self.cost
+        
+    def updateRecord(self,ifBuy):        
+        if ifBuy == 1:
+            hands = int(self.money2Buy / self.stok1.curPrice // 100)
+            recode = OperatRecord(self.stok1.curPrice, hands)
+            self.recordBuyInfor.append(recode)
+        else:
+            hands = int(self.moneyfromSell / self.stok1.curPrice // 100)
+            recode = OperatRecord(self.stok1.curPrice, hands)
+            self.recordSelInfor.append(recode)
+                             
     def showIvestorInfor(self):
-        print("markeyMoney:{:.2f}, freeMoney:{:.2f}, profit:{:.2f}".format(
-                self.marketMoney, self.freeMoney,self.profit))
+        print("money2Buy:{:.2f}, moneyFromSell:{:.2f}".format(self.money2Buy,self.moneyfromSell))
+        print("markeyMoney:{:.2f}, freeMoney:{:.2f}, profit:{:.2f}, profitMargin:{}".format(
+                self.marketMoney, self.freeMoney,self.profit, self.profitMargin))
+ 
+ 
+class OperatRecord():
+    def __init__(self, price, hands):
+        self.price = price
+        self.hands = hands
+        self.state = 0
     
+    
+     
 if  __name__ == '__main__':
     
     investor = Investor(100000)
@@ -74,6 +125,13 @@ if  __name__ == '__main__':
     investor.sell(30, 10)
     investor.showIvestorInfor()
     investor.stockList[0].showStockInfor()
+    
+    investor.qingCang(40)
+    investor.showIvestorInfor()
+    investor.stockList[0].showStockInfor()
+    
+    
+    
     
     
     

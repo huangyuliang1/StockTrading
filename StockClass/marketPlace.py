@@ -8,63 +8,71 @@ from investor import Investor
 class marketPlace():
     def __init__(self, totalManey):
         self.totalManey = totalManey
-        self.lstThreeBuyPriAndHands = [[0,0],[0,0],[0,0]]
-        self.lstThreeSelPriAndHands = [[0,0],[0,0],[0,0]]
-        self.continuousBuyTimes = 0
-        self.continuousSelTimes = 0
-        self.lstProPri = 0
+        self.lstpri = 0
         
-    def chooseStock(self, strStockName):
-        self.stockName = strStockName
-        
-    def trading(self, riseThr = 0.05, fallThr = -0.1, buyRate = 0.25, selRate = 0.25):
-              
-        investor = Investor(self.totalManey)
-        investor.jianCang(self.stockName, 0)
-        stock = investor.stok1
-        self.updateLstBuyPriList(0, stock.curPrice, stock.stockHands)
-        self.lstProPri = stock.curPrice
-        
-        for date in range(1,stock.longOfStockHistData):
-            stock = investor.stok1
+    def createInvestor(self):
+        self.investor = Investor(self.totalManey)
+    
+    def trading(self, strStockName, riseThr = 0.2, fallThr = -0.15, buyRate = 1.0):
+                  
+        self.investor.chooseStock(strStockName)
+        stock = self.investor.stok1
+        print("longOfStockHistData:{}".format(stock.longOfStockHistData))
+        start = 29
+        ifChuQuan = 0
+        for date in range(start ,stock.longOfStockHistData):
+                                  
             stock.updateCurPrice(date)
-            rate = (stock.curPrice - self.lstProPri) /stock.curPrice
             
-            if rate > riseThr:
-                investor.sell(date, int(stock.stockHands * selRate))               
-                self.updateLstSelPriList(self.continuousSelTimes, stock.curPrice, int(investor.moneyfromSell//stock.curPrice//100))
+            if stock.stockHands > 0:
+                r = (stock.curPrice - stock.stockHistData[date-1]) / stock.curPrice 
+                if r < -0.15:
+                    self.investor.chuquanAndQingCang(date)
+                    stock.showStockInfor()
+                    self.investor.showIvestorInfor()
+                    ifChuQuan = date + 30
+                    continue
+            
+            if ifChuQuan != 0 and date < ifChuQuan: # 如果除权了，30天后在操作
+                continue
+            ifChuQuan = 0
+             
+            stock.updateStockStatisticsInfo(date)
+            
+            buyrate = (stock.curPrice - stock.maxAverMinMonth[1]) / stock.curPrice #以一个月的股价均值做为参照
+            selrate = (stock.curPrice - stock.maxAverMinMonth[1]) / stock.curPrice 
+            
+            # 长线
+            if buyrate < fallThr and stock.stockHands == 0:
+                self.investor.jianCang(date, buyRate)
+                stock.showStockInfor()
+                self.investor.showIvestorInfor()
                 
+            if selrate > riseThr and stock.stockHands > 0: 
+                self.investor.qingCang(date)    
+                stock.showStockInfor()
+                self.investor.showIvestorInfor() 
+                
+            # 短线
+            '''
+            if rate > riseThr:
+                self.investor.sell(date, int(stock.stockHands * selRate))               
+                self.updateLstSelPriList(self.continuousSelTimes, stock.curPrice, int(investor.moneyfromSell//stock.curPrice//100))
+                 
                 self.lstProPri = stock.curPrice
                 investor.showIvestorInfor()
                 stock.showStockInfor()
                 self.showMarkInfor()
-                
+                 
             if rate < fallThr:
                 investor.buy(date, investor.freeMoney * buyRate)
                 self.updateLstBuyPriList(self.continuousBuyTimes, stock.curPrice, int(investor.money2Buy//stock.curPrice//100))
-                
+                 
                 self.lstProPri = stock.curPrice
                 investor.showIvestorInfor()
                 stock.showStockInfor()
                 self.showMarkInfor()
-                   
-    def updateLstBuyPriList(self, lastTimes, pri, num):
-               
-        self.lstThreeBuyPriAndHands[lastTimes][0] = pri
-        self.lstThreeBuyPriAndHands[lastTimes][1] = num 
-        if self.continuousBuyTimes < 2:
-            self.continuousBuyTimes += 1   
-        if self.continuousSelTimes > 0:
-            self.continuousSelTimes -= 1
-        
-        
-    def updateLstSelPriList(self, lastTimes, pri, num):
-        self.lstThreeSelPriAndHands[lastTimes][0] = pri
-        self.lstThreeSelPriAndHands[lastTimes][1] = num
-        if self.continuousSelTimes < 2:  
-            self.continuousSelTimes += 1 
-        if self.continuousBuyTimes > 0: 
-            self.continuousBuyTimes -= 1
+            '''
             
     def showMarkInfor(self):
         print("lstThreeBuyPriAndHands:{}, lstThreeSelPriAndHands:{}".format(
@@ -74,9 +82,13 @@ class marketPlace():
     
 if  __name__ == '__main__':
     
-    process = marketPlace(100000)  
-    process.chooseStock("002414") 
-    process.trading()
+    # 002142/宁波银行    002414/海康威视   002230/科大讯飞    600598/北大荒     000651/格力电器
+    marketPlace = marketPlace(100000)
+    marketPlace.createInvestor()
+    
+    marketPlace.trading("002230")  
+#     print(marketPlace.investor.stok1.stockHistData[:40])
+    print("end!")
     
     
 
