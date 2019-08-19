@@ -13,31 +13,31 @@ class marketPlace():
     def createInvestor(self):
         self.investor = Investor(self.totalManey)
     
-    def trading(self, strStockName, riseThr = 0.2, fallThr = -0.15, buyRate = 1.0):
+    def trading(self, strStockName, week=7, month=30, riseThr = 0.1, fallThr = -0.10, buyRate = 1.0):
                   
         self.investor.chooseStock(strStockName)
         stock = self.investor.stok1
         print("longOfStockHistData:{}".format(stock.longOfStockHistData))
-        start = 29
+        start = 260
         ifChuQuan = 0
         for date in range(start ,stock.longOfStockHistData):
                                   
             stock.updateCurPrice(date)
+            r = (stock.curPrice - stock.stockHistData[date-1]) / stock.curPrice 
             
-            if stock.stockHands > 0:
-                r = (stock.curPrice - stock.stockHistData[date-1]) / stock.curPrice 
-                if r < -0.15:
+            if r < -0.15: # 当派股时，清仓，且month天后再操作
+                if stock.stockHands > 0:
                     self.investor.chuquanAndQingCang(date)
                     stock.showStockInfor()
                     self.investor.showIvestorInfor()
-                    ifChuQuan = date + 30
-                    continue
+                ifChuQuan = date + month
+                continue
             
-            if ifChuQuan != 0 and date < ifChuQuan: # 如果除权了，30天后在操作
+            if ifChuQuan != 0 and date < ifChuQuan: # 如果除权了，30天后再操作
                 continue
             ifChuQuan = 0
              
-            stock.updateStockStatisticsInfo(date)
+            stock.updateStockStatisticsInfo(date, week, month)
             
             buyrate = (stock.curPrice - stock.maxAverMinMonth[1]) / stock.curPrice #以一个月的股价均值做为参照
             selrate = (stock.curPrice - stock.maxAverMinMonth[1]) / stock.curPrice 
@@ -79,7 +79,8 @@ class marketPlace():
         self.lstThreeBuyPriAndHands, self.lstThreeSelPriAndHands))
         print("continuousBuyTimes:{}, continuousSelTimes:{}".format(
             self.continuousBuyTimes,self.continuousSelTimes))
-    
+        
+import matplotlib.pyplot as plt    
 if  __name__ == '__main__':
     
     # 002142/宁波银行    002414/海康威视   002230/科大讯飞    600598/北大荒     000651/格力电器
@@ -89,6 +90,7 @@ if  __name__ == '__main__':
     marketPlace.trading("002230")  
 #     print(marketPlace.investor.stok1.stockHistData[:40])
     print("end!")
+    plt.show()
     
     
 

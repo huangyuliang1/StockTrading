@@ -5,6 +5,7 @@ Created on 2019年8月11日
 '''
 import tushare as ts
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Stock():
     def __init__(self, name):    
@@ -24,6 +25,7 @@ class Stock():
         self.stockHistData = list(np.array(df.close))
         self.stockHistData.reverse()
         self.longOfStockHistData = len(self.stockHistData)
+        plt.plot(list(range(self.longOfStockHistData)),self.stockHistData)
         
     def calcStockNumAfterBuyAndReturnBoughtMoney(self, money):
         num = int(money // self.curPrice)
@@ -51,15 +53,15 @@ class Stock():
         self.stockHands = self.stockNum // 100
         self.marketMoney = self.stockNum * self.curPrice
     
-    def updateStockStatisticsInfo(self, date):
-        if date > 5:
-            self.maxAverMinWeek[0] = max(self.stockHistData[date-7:date:])
-            self.maxAverMinWeek[1] = np.average(self.stockHistData[date-7:date:])
-            self.maxAverMinWeek[2] = min(self.stockHistData[date-7:date:])
-        if date > 29:
-            self.maxAverMinMonth[0] = max(self.stockHistData[date-30:date:])
-            self.maxAverMinMonth[1] = np.average(self.stockHistData[date-30:date:])
-            self.maxAverMinMonth[2] = min(self.stockHistData[date-30:date:])
+    def updateStockStatisticsInfo(self, date, week, month):
+        if date > week-1:
+            self.maxAverMinWeek[0] = max(self.stockHistData[date-week:date:])
+            self.maxAverMinWeek[1] = np.average(self.stockHistData[date-week:date:])
+            self.maxAverMinWeek[2] = min(self.stockHistData[date-week:date:])
+        if date > month-1:
+            self.maxAverMinMonth[0] = max(self.stockHistData[date-month:date:])
+            self.maxAverMinMonth[1] = np.average(self.stockHistData[date-month:date:])
+            self.maxAverMinMonth[2] = min(self.stockHistData[date-month:date:])
         
     def showStockInfor(self):
         print("maxAverMinMonth:{}, maxAverMinWeek:{}".format(self.maxAverMinMonth, self.maxAverMinWeek))
