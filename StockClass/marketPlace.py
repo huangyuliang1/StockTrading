@@ -33,7 +33,7 @@ class marketPlace():
                 ifChuQuan = date + month
                 continue
             
-            if ifChuQuan != 0 and date < ifChuQuan: # 如果除权了，30天后再操作
+            if ifChuQuan != 0 and date < ifChuQuan: # 如果除权了，month天后再操作
                 continue
             ifChuQuan = 0
              
